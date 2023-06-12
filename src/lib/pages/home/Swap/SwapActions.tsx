@@ -1,4 +1,12 @@
-import { SettingsIcon, ChevronDownIcon, ArrowDownIcon } from "@chakra-ui/icons";
+import {
+  SettingsIcon,
+  ChevronDownIcon,
+  ArrowDownIcon,
+  PhoneIcon,
+  AddIcon,
+  WarningIcon,
+  SmallCloseIcon,
+} from "@chakra-ui/icons";
 import {
   Flex,
   Box,
@@ -23,9 +31,10 @@ import {
   CardHeader,
   CardBody,
   Avatar,
-  Spinner
+  Spinner,
 } from "@chakra-ui/react";
-import { PhoneIcon, AddIcon, WarningIcon, SmallCloseIcon } from '@chakra-ui/icons'
+
+// @ts-ignore
 import { useEffect, useState } from "react";
 
 import etherLogo from "lib/assets/png/etherLogo.png";
@@ -35,25 +44,72 @@ export const SwapActions = () => {
   const { state } = usePioneer();
   const { api, user } = state;
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [balances, setBalances] = useState([]);
+  const [balances, setBalances] = useState([
+    {
+      symbol: "",
+      balance: "",
+      address: "",
+      image: "",
+      blockchain: "",
+      amount: "",
+      decimals: "",
+      name: "",
+      price: "",
+      priceChange: "",
+      priceChangePercentage: "",
+      rank: "",
+      totalSupply: "",
+      volume: "",
+    },
+  ]);
   const [pubkeys, setPubkeys] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [swapInfo, setSwapInfo] = useState("");
+  const [swapInfo, setSwapInfo] = useState({
+    currencyFrom: "",
+    currencyTo: "",
+    amountFrom: "",
+    currencyFromImage: "",
+    currencyToImage: "",
+    currencyFromName: "",
+    currencyToName: "",
+    currencyFromSymbol: "",
+    currencyToSymbol: "",
+    currencyFromDecimals: "",
+    currencyToDecimals: "",
+    currencyFromAddress: "",
+    currencyToAddress: "",
+    currencyFromBlockchain: "",
+    currencyToBlockchain: "",
+    currencyFromPrice: "",
+    amountExpectedFrom: "",
+    amountExpectedTo: "",
+    id: "",
+    changellyFee: "",
+    rate: "",
+    rateLockedInUntil: "",
+    kycRequired: "",
+    payinAddress: "",
+    payoutAddress: "",
+    apiExtraFee: "",
+    status: "",
+    createdAt: "",
+  });
   const [input, setInput] = useState({
-    address:"",
-    symbol:""
+    address: "",
+    symbol: "",
+    name: "",
   });
   const [output, setOutput] = useState({
-    address:"",
-    symbol:""
+    address: "",
+    symbol: "",
+    name: "",
   });
-  
-  //get coins from api
-  
-  
+
+  // get coins from api
+
   const setUser = async function () {
     try {
-      console.log(" ********************* USER SET **********************")
+      console.log(" ********************* USER SET **********************");
       const { balances, pubkeys } = user;
       // setBalances(balances);
       // setPubkeys(pubkeys);
@@ -63,20 +119,21 @@ export const SwapActions = () => {
 
       // // eslint-disable-next-line no-console
       // console.log("pubkeys: ", pubkeys);
-      //get coins from api
+      // get coins from api
       let coins = await api.CurrenciesChangelly();
-      coins = coins.data
+      coins = coins.data;
       // console.log("*** coins: ",coins);
 
-      //filter coins for what keepkey supports
-      const filteredBalances = balances.filter((balance: { symbol: string; }) => coins.includes(balance.symbol.toLowerCase()));
+      // filter coins for what keepkey supports
+      const filteredBalances = balances.filter((balance: { symbol: string }) =>
+        coins.includes(balance.symbol.toLowerCase())
+      );
       // console.log("filtered balances: ", filteredBalances);
-      //mark coins that have balances
+      // mark coins that have balances
       setBalances(filteredBalances);
 
       setInput(filteredBalances[0]);
       setOutput(filteredBalances[1]);
-      
     } catch (e) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -128,17 +185,17 @@ export const SwapActions = () => {
     try {
       // eslint-disable-next-line no-console
       console.log("onSubmitPrimary: ");
-      //create transaction
-      let tx = {
+      // create transaction
+      const tx = {
         from: input.symbol,
         to: output.symbol,
         address: output.address,
         amount: 1000,
-        extraId: undefined
-      }
-      console.log("tx: ",tx);
-      let swapConduit = await api.CreateTransactionChangelly({},tx);
-      console.log("swapConduit: ",swapConduit.data);
+        extraId: undefined,
+      };
+      console.log("tx: ", tx);
+      const swapConduit = await api.CreateTransactionChangelly({}, tx);
+      console.log("swapConduit: ", swapConduit.data);
       setSwapInfo(swapConduit.data);
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -205,205 +262,213 @@ export const SwapActions = () => {
         />
       </Flex>
       {isLoaded ? (
-          <div>
-            <Box p="0.5rem" bg="gray" borderRadius="0 0 1.37rem 1.37rem">
-              {swapInfo ? (
-                  <div>
-                    <Card>
-                      <CardHeader>
-                        <Heading size='md'>Swap ID: {swapInfo.id}</Heading>
-                      </CardHeader>
-                      <CardBody>
-                        <Stack divider={<StackDivider />} spacing='4'>
-                          <Box>
-                            <Heading size='xs' textTransform='uppercase'>
-                              Summary
-                            </Heading>
-                            <Text pt='2' fontSize='sm'>
-                              Currency From: {swapInfo.currencyFrom} <br/>
-                              Currency To: {swapInfo.currencyTo} <br/>
-                              Amount Expected From: {swapInfo.amountExpectedFrom} <br/>
-                              Amount Expected To: {swapInfo.amountExpectedTo}
-                            </Text>
-                          </Box>
-                          <Box>
-                            <Heading size='xs' textTransform='uppercase'>
-                              fees
-                            </Heading>
-                            <Text pt='2' fontSize='sm'>
-                              changellyFee: {swapInfo.changellyFee} <br/>
-                              apiExtraFee: {swapInfo.apiExtraFee}
-                            </Text>
-                          </Box>
-                          <Box>
-                            <Heading size='xs' textTransform='uppercase'>
-                              KYC
-                            </Heading>
-                            <Text pt='2' fontSize='sm'>
-                              {swapInfo.kycRequired ? (<div>
-                                amount to large! KYC will be required!<WarningIcon></WarningIcon>
-                              </div>) : (<div>
-                                Not Required<SmallCloseIcon></SmallCloseIcon>
-                              </div>)}
-                            </Text>
-                          </Box>
-                          <Box>
-                            <Heading size='xs' textTransform='uppercase'>
-                              Overview
-                            </Heading>
-                            <Text pt='2' fontSize='sm'>
-                              Payin Address: {swapInfo.payinAddress} <br/>
-                              Payout Address: {swapInfo.payoutAddress}
-                            </Text>
-                          </Box>
-                          <Box>
-                            <Heading size='xs' textTransform='uppercase'>
-                              status
-                            </Heading>
-                            <Text pt='2' fontSize='sm'>
-                              Status: {swapInfo.status} <br/>
-                              Created At: {swapInfo.createdAt}
-                            </Text>
-                          </Box>
-                        </Stack>
-                      </CardBody>
-                    </Card>
-                  </div>
-              ) : (
-                  <div>
-                    <Flex
-                        alignItems="center"
-                        justifyContent="space-between"
-                        bg="rgb(247, 248, 250)"
-                        p="1rem 1rem 1.7rem"
-                        borderRadius="1.25rem"
-                        border="0.06rem solid rgb(237, 238, 242)"
-                        _hover={{ border: "0.06rem solid rgb(211,211,211)" }}
+        <div>
+          <Box p="0.5rem" bg="gray" borderRadius="0 0 1.37rem 1.37rem">
+            {swapInfo ? (
+              <div>
+                <Card>
+                  <CardHeader>
+                    <Heading size="md">Swap ID: {swapInfo.id}</Heading>
+                  </CardHeader>
+                  <CardBody>
+                    <Stack divider={<StackDivider />} spacing="4">
+                      <Box>
+                        <Heading size="xs" textTransform="uppercase">
+                          Summary
+                        </Heading>
+                        <Text pt="2" fontSize="sm">
+                          Currency From: {swapInfo.currencyFrom} <br />
+                          Currency To: {swapInfo.currencyTo} <br />
+                          Amount Expected From: {
+                            swapInfo.amountExpectedFrom
+                          }{" "}
+                          <br />
+                          Amount Expected To: {swapInfo.amountExpectedTo}
+                        </Text>
+                      </Box>
+                      <Box>
+                        <Heading size="xs" textTransform="uppercase">
+                          fees
+                        </Heading>
+                        <Text pt="2" fontSize="sm">
+                          changellyFee: {swapInfo.changellyFee} <br />
+                          apiExtraFee: {swapInfo.apiExtraFee}
+                        </Text>
+                      </Box>
+                      <Box>
+                        <Heading size="xs" textTransform="uppercase">
+                          KYC
+                        </Heading>
+                        <Text pt="2" fontSize="sm">
+                          {swapInfo.kycRequired ? (
+                            <div>
+                              amount to large! KYC will be required!
+                              <WarningIcon />
+                            </div>
+                          ) : (
+                            <div>
+                              Not Required
+                              <SmallCloseIcon />
+                            </div>
+                          )}
+                        </Text>
+                      </Box>
+                      <Box>
+                        <Heading size="xs" textTransform="uppercase">
+                          Overview
+                        </Heading>
+                        <Text pt="2" fontSize="sm">
+                          Payin Address: {swapInfo.payinAddress} <br />
+                          Payout Address: {swapInfo.payoutAddress}
+                        </Text>
+                      </Box>
+                      <Box>
+                        <Heading size="xs" textTransform="uppercase">
+                          status
+                        </Heading>
+                        <Text pt="2" fontSize="sm">
+                          Status: {swapInfo.status} <br />
+                          Created At: {swapInfo.createdAt}
+                        </Text>
+                      </Box>
+                    </Stack>
+                  </CardBody>
+                </Card>
+              </div>
+            ) : (
+              <div>
+                <Flex
+                  alignItems="center"
+                  justifyContent="space-between"
+                  bg="rgb(247, 248, 250)"
+                  p="1rem 1rem 1.7rem"
+                  borderRadius="1.25rem"
+                  border="0.06rem solid rgb(237, 238, 242)"
+                  _hover={{ border: "0.06rem solid rgb(211,211,211)" }}
+                >
+                  <Box>
+                    <Button
+                      bg="blue.500"
+                      borderRadius="1.12rem"
+                      boxShadow="rgb(0 0 0 / 8%) 0rem 5.25rem 0.62rem"
+                      fontWeight="500"
+                      mr="0.5rem"
+                      rightIcon={
+                        <ChevronDownIcon fontSize="1.37rem" cursor="pointer" />
+                      }
+                      onClick={onSelectInput}
                     >
-                      <Box>
-                        <Button
-                            bg="blue.500"
-                            borderRadius="1.12rem"
-                            boxShadow="rgb(0 0 0 / 8%) 0rem 5.25rem 0.62rem"
-                            fontWeight="500"
-                            mr="0.5rem"
-                            rightIcon={
-                              <ChevronDownIcon fontSize="1.37rem" cursor="pointer" />
-                            }
-                            onClick={onSelectInput}
-                        >
-                          {/*<Image*/}
-                          {/*  boxSize="1.5rem"*/}
-                          {/*  src={etherLogo}*/}
-                          {/*  alt="Ether Logo"*/}
-                          {/*  mr="0.5rem"*/}
-                          {/*/>*/}
-                          {input.name} ({input.symbol})
-                        </Button>
-                      </Box>
-                      <Box>
-                        <Input
-                            placeholder="0.0"
-                            fontWeight="500"
-                            fontSize="1.5rem"
-                            width="100%"
-                            size="19rem"
-                            textAlign="right"
-                            bg="rgb(247, 248, 250)"
-                            outline="none"
-                            border="none"
-                            focusBorderColor="none"
-                            type="number"
-                        />
-                      </Box>
-                    </Flex>
+                      {/* <Image */}
+                      {/*  boxSize="1.5rem" */}
+                      {/*  src={etherLogo} */}
+                      {/*  alt="Ether Logo" */}
+                      {/*  mr="0.5rem" */}
+                      {/* /> */}
+                      {input.name} ({input.symbol})
+                    </Button>
+                  </Box>
+                  <Box>
+                    <Input
+                      placeholder="0.0"
+                      fontWeight="500"
+                      fontSize="1.5rem"
+                      width="100%"
+                      size="19rem"
+                      textAlign="right"
+                      bg="rgb(247, 248, 250)"
+                      outline="none"
+                      border="none"
+                      focusBorderColor="none"
+                      type="number"
+                    />
+                  </Box>
+                </Flex>
 
-                    <Flex
-                        alignItems="center"
-                        justifyContent="space-between"
-                        bg="rgb(247, 248, 250)"
-                        pos="relative"
-                        p="1rem 1rem 1.7rem"
-                        borderRadius="1.25rem"
-                        mt="0.25rem"
-                        border="0.06rem solid rgb(237, 238, 242)"
-                        _hover={{ border: "0.06rem solid rgb(211,211,211)" }}
+                <Flex
+                  alignItems="center"
+                  justifyContent="space-between"
+                  bg="rgb(247, 248, 250)"
+                  pos="relative"
+                  p="1rem 1rem 1.7rem"
+                  borderRadius="1.25rem"
+                  mt="0.25rem"
+                  border="0.06rem solid rgb(237, 238, 242)"
+                  _hover={{ border: "0.06rem solid rgb(211,211,211)" }}
+                >
+                  <Box>
+                    <Button
+                      bg="rgb(232, 0, 111)"
+                      color="blue"
+                      p="0rem 1rem"
+                      borderRadius="1.12rem"
+                      boxShadow="rgb(0 0 0 / 8%) 0rem 5.25rem 0.62rem"
+                      _hover={{ bg: "rgb(207, 0, 99)" }}
+                      rightIcon={
+                        <ChevronDownIcon fontSize="1.37rem" cursor="pointer" />
+                      }
+                      onClick={onSelectOutput}
                     >
-                      <Box>
-                        <Button
-                            bg="rgb(232, 0, 111)"
-                            color="blue"
-                            p="0rem 1rem"
-                            borderRadius="1.12rem"
-                            boxShadow="rgb(0 0 0 / 8%) 0rem 5.25rem 0.62rem"
-                            _hover={{ bg: "rgb(207, 0, 99)" }}
-                            rightIcon={
-                              <ChevronDownIcon fontSize="1.37rem" cursor="pointer" />
-                            }
-                            onClick={onSelectOutput}
-                        >
-                          {output.name} ({output.symbol})
-                        </Button>
-                      </Box>
-                      <Flex
-                          alignItems="center"
-                          justifyContent="center"
-                          bg="white"
-                          p="0.18rem"
-                          borderRadius="0.75rem"
-                          pos="relative"
-                          top="-2.37rem"
-                          left="2.5rem"
-                      >
-                        <ArrowDownIcon
-                            bg="rgb(247, 248, 250)"
-                            color="rgb(128,128,128)"
-                            h="1.5rem"
-                            width="1.62rem"
-                            borderRadius="0.75rem"
-                        />
-                      </Flex>
-                      <Box>
-                        <Input
-                            placeholder="0.0"
-                            fontSize="1.5rem"
-                            width="100%"
-                            size="19rem"
-                            textAlign="right"
-                            bg="rgb(247, 248, 250)"
-                            outline="none"
-                            border="none"
-                            focusBorderColor="none"
-                            type="number"
-                        />
-                      </Box>
-                    </Flex>
+                      {output.name} ({output.symbol})
+                    </Button>
+                  </Box>
+                  <Flex
+                    alignItems="center"
+                    justifyContent="center"
+                    bg="white"
+                    p="0.18rem"
+                    borderRadius="0.75rem"
+                    pos="relative"
+                    top="-2.37rem"
+                    left="2.5rem"
+                  >
+                    <ArrowDownIcon
+                      bg="rgb(247, 248, 250)"
+                      color="rgb(128,128,128)"
+                      h="1.5rem"
+                      width="1.62rem"
+                      borderRadius="0.75rem"
+                    />
+                  </Flex>
+                  <Box>
+                    <Input
+                      placeholder="0.0"
+                      fontSize="1.5rem"
+                      width="100%"
+                      size="19rem"
+                      textAlign="right"
+                      bg="rgb(247, 248, 250)"
+                      outline="none"
+                      border="none"
+                      focusBorderColor="none"
+                      type="number"
+                    />
+                  </Box>
+                </Flex>
 
-                    <Box mt="0.5rem">
-                      <Button
-                          color="rgb(213, 0, 102)"
-                          bg="rgb(253, 234, 241)"
-                          width="100%"
-                          p="1.62rem"
-                          borderRadius="1.25rem"
-                          _hover={{ bg: "rgb(251, 211, 225)" }}
-                          onClick={onSelectPrimary}
-                      >
-                        Swap
-                      </Button>
-                    </Box>
-                  </div>
-              )}
-            </Box>
-          </div>
-      ):(
-          <div>
-            <Box p="0.5rem" bg="gray" borderRadius="0 0 1.37rem 1.37rem">
-              <Spinner color='green.500' />
-            </Box>
-          </div>
+                <Box mt="0.5rem">
+                  <Button
+                    color="rgb(213, 0, 102)"
+                    bg="rgb(253, 234, 241)"
+                    width="100%"
+                    p="1.62rem"
+                    borderRadius="1.25rem"
+                    _hover={{ bg: "rgb(251, 211, 225)" }}
+                    onClick={onSelectPrimary}
+                  >
+                    Swap
+                  </Button>
+                </Box>
+              </div>
+            )}
+          </Box>
+        </div>
+      ) : (
+        <div>
+          <Box p="0.5rem" bg="gray" borderRadius="0 0 1.37rem 1.37rem">
+            <Spinner color="green.500" />
+          </Box>
+        </div>
       )}
-
     </Box>
   );
 };

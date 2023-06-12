@@ -1,8 +1,9 @@
 import { Center } from "@chakra-ui/react";
-import { CircularProgress } from "lib/components/CircularProgress";
 import type { HTMLMotionProps } from "framer-motion";
-import { Text } from "lib/components/Text";
 import type { ReactNode } from "react";
+
+import { CircularProgress } from "lib/components/CircularProgress";
+import { Text } from "lib/components/Text";
 
 import { PageTransition } from "./PageTransition";
 
