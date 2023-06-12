@@ -37,7 +37,7 @@ import {
 // @ts-ignore
 import { useEffect, useState } from "react";
 
-import etherLogo from "lib/assets/png/etherLogo.png";
+// import etherLogo from "lib/assets/png/etherLogo.png";
 import { usePioneer } from "lib/context/Pioneer";
 
 export const SwapActions = () => {
