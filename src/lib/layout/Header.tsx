@@ -39,6 +39,7 @@ import {
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 import { KeepKeyIcon } from "lib/assets/Icons/KeepKeyIcon";
 import { KeplrIcon } from "lib/assets/Icons/KeplrIcon";
@@ -131,7 +132,8 @@ const Header = () => {
       // if(!wallet)
       //   await connect();
       // set color mode dark
-      localStorage.setItem("chakra-ui-color-mode", "dark");
+
+
       // eslint-disable-next-line no-console
     } catch (e) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -220,8 +222,8 @@ const Header = () => {
   //     // setKeepKeyError("Bridge is offline!");
   //   }
   // };
-  //
-  // // onStart()
+
+  // onStart()
   // useEffect(() => {
   //   setUser();
   // }, [user]); // once on startup

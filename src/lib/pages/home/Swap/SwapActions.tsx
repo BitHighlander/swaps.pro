@@ -109,31 +109,34 @@ export const SwapActions = () => {
 
   const setUser = async function () {
     try {
-      console.log(" ********************* USER SET **********************");
-      const { balances, pubkeys } = user;
-      // setBalances(balances);
-      // setPubkeys(pubkeys);
+      if(user && user.balances && user.pubkeys) {
+        console.log(" ********************* USER SET **********************");
+        const { balances, pubkeys } = user;
+        // setBalances(balances);
+        // setPubkeys(pubkeys);
 
-      // // eslint-disable-next-line no-console
-      // console.log("balances: ", balances);
+        // // eslint-disable-next-line no-console
+        // console.log("balances: ", balances);
 
-      // // eslint-disable-next-line no-console
-      // console.log("pubkeys: ", pubkeys);
-      // get coins from api
-      let coins = await api.CurrenciesChangelly();
-      coins = coins.data;
-      // console.log("*** coins: ",coins);
+        // // eslint-disable-next-line no-console
+        // console.log("pubkeys: ", pubkeys);
+        // get coins from api
+        let coins = await api.CurrenciesChangelly();
+        coins = coins.data;
+        // console.log("*** coins: ",coins);
 
-      // filter coins for what keepkey supports
-      const filteredBalances = balances.filter((balance: { symbol: string }) =>
-        coins.includes(balance.symbol.toLowerCase())
-      );
-      // console.log("filtered balances: ", filteredBalances);
-      // mark coins that have balances
-      setBalances(filteredBalances);
+        // filter coins for what keepkey supports
+        const filteredBalances = balances.filter((balance: { symbol: string }) =>
+            coins.includes(balance.symbol.toLowerCase())
+        );
+        // console.log("filtered balances: ", filteredBalances);
+        // mark coins that have balances
+        setBalances(filteredBalances);
 
-      setInput(filteredBalances[0]);
-      setOutput(filteredBalances[1]);
+        setInput(filteredBalances[0]);
+        setOutput(filteredBalances[1]);
+      }
+
     } catch (e) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -146,7 +149,7 @@ export const SwapActions = () => {
   // onStart()
   useEffect(() => {
     setUser();
-  }, [user]); // once on startup
+  }, [user, user?.balances]); // once on startup
 
   const onSelectInput = async function () {
     try {
@@ -217,21 +220,21 @@ export const SwapActions = () => {
           <ModalHeader>Coin Select</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {balances.map((balance) => (
-              <Card>
-                <Avatar src={balance.image} />
-                <CardBody>
-                  <Heading size="md">{balance.blockchain}</Heading>
-                  <Text py="2">
-                    {balance.amount} {balance.symbol}
-                  </Text>
-                </CardBody>
-                <CardFooter>
-                  <Button variant="solid" colorScheme="blue">
-                    select
-                  </Button>
-                </CardFooter>
-              </Card>
+            {balances.map((balance, index) => (
+                <Card key={balance.address || index}>
+                  <Avatar src={balance.image} />
+                  <CardBody>
+                    <Heading size="md">{balance.blockchain}</Heading>
+                    <Text py="2">
+                      {balance.amount} {balance.symbol}
+                    </Text>
+                  </CardBody>
+                  <CardFooter>
+                    <Button variant="solid" colorScheme="blue">
+                      select
+                    </Button>
+                  </CardFooter>
+                </Card>
             ))}
           </ModalBody>
           <ModalFooter>
