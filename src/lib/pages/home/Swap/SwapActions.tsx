@@ -112,6 +112,7 @@ export const SwapActions = () => {
       if(user && user.balances && user.pubkeys) {
         console.log(" ********************* USER SET **********************");
         const { balances, pubkeys } = user;
+        setIsLoaded(true)
         // setBalances(balances);
         // setPubkeys(pubkeys);
 
@@ -123,7 +124,7 @@ export const SwapActions = () => {
         // get coins from api
         let coins = await api.CurrenciesChangelly();
         coins = coins.data;
-        // console.log("*** coins: ",coins);
+        console.log("*** coins: ",coins);
 
         // filter coins for what keepkey supports
         const filteredBalances = balances.filter((balance: { symbol: string }) =>
@@ -267,7 +268,7 @@ export const SwapActions = () => {
       {isLoaded ? (
         <div>
           <Box p="0.5rem" bg="gray" borderRadius="0 0 1.37rem 1.37rem">
-            {swapInfo ? (
+            {swapInfo?.id ? (
               <div>
                 <Card>
                   <CardHeader>

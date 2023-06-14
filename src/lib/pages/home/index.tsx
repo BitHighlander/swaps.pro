@@ -39,7 +39,7 @@ import { SwapActions } from "./Swap/SwapActions";
 const Home = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef<HTMLButtonElement>(null);
-
+  localStorage.setItem("chakra-ui-color-mode", "dark");
   const avatars = [
     { id: 1, src: "avatar1.png" },
     { id: 2, src: "avatar2.png" },

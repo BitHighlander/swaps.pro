@@ -224,17 +224,17 @@ export const PioneerProvider = ({
         localStorage.setItem("serviceKey", config.apiKey);
       }
       const keyring = new core.Keyring();
-      // const metaMaskAdapter = metaMask.MetaMaskAdapter.useKeyring(keyring);
-      // const walletMetaMask = await metaMaskAdapter.pairDevice();
-      // if (walletMetaMask) {
-      //   // pair metamask
-      //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //   // @ts-ignore
-      //   await walletMetaMask.initialize();
-      //   // eslint-disable-next-line no-console
-      //   console.log("walletMetaMask: ", walletMetaMask);
-      //   console.log("ethAddress: ", walletMetaMask.ethAddress);
-      // }
+      const metaMaskAdapter = metaMask.MetaMaskAdapter.useKeyring(keyring);
+      const walletMetaMask = await metaMaskAdapter.pairDevice();
+      if (walletMetaMask) {
+        // pair metamask
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        await walletMetaMask.initialize();
+        // eslint-disable-next-line no-console
+        console.log("walletMetaMask: ", walletMetaMask);
+        console.log("ethAddress: ", walletMetaMask.ethAddress);
+      }
 
       if (!queryKey) {
         queryKey = `key:${uuidv4()}`;
@@ -275,31 +275,31 @@ export const PioneerProvider = ({
       const appInit = new SDK(spec, configPioneer);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      // const api = await appInit.init(walletMetaMask);
-      // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // // // @ts-ignore
-      // // dispatch({ type: WalletActions.SET_WALLET, payload: walletMetaMask });
-      // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      const api = await appInit.init(walletMetaMask);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // // @ts-ignore
-      // dispatch({ type: WalletActions.SET_APP, payload: appInit });
-      // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // // @ts-ignore
-      // dispatch({ type: WalletActions.SET_API, payload: api });
-      // // @ts-ignore
-      // const user = await api.User();
-      // // eslint-disable-next-line no-console
-      // console.log("user: ", user.data);
-      //
-      // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // // @ts-ignore
-      // dispatch({ type: WalletActions.SET_USER, payload: user.data });
-      // // setUsername(localStorage.getItem("username"));
-      //
-      // // eslint-disable-next-line no-console
-      // console.log("user.data.context: ", user.data.context);
-      // setContext(user.data.context);
-      // setBlockchainContext(user.data.blockchainContext);
-      // setAssetContext(user.data.assetContext);
+      // dispatch({ type: WalletActions.SET_WALLET, payload: walletMetaMask });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      dispatch({ type: WalletActions.SET_APP, payload: appInit });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      dispatch({ type: WalletActions.SET_API, payload: api });
+      // @ts-ignore
+      const user = await api.User();
+      // eslint-disable-next-line no-console
+      console.log("user: ", user.data);
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      dispatch({ type: WalletActions.SET_USER, payload: user.data });
+      // setUsername(localStorage.getItem("username"));
+
+      // eslint-disable-next-line no-console
+      console.log("user.data.context: ", user.data.context);
+      setContext(user.data.context);
+      setBlockchainContext(user.data.blockchainContext);
+      setAssetContext(user.data.assetContext);
 
       // // eslint-disable-next-line react-hooks/rules-of-hooks
       // const nativeAdapter = NativeAdapter.useKeyring(keyring);
